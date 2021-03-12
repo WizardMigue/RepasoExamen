@@ -1,0 +1,196 @@
+Paso a paso de Visual Studio Code:
+==================================================================================================================
+Crear un directorio.
+Npm init dentro del directorio.
+Accedemos al visual studio code y creamos una carpeta con un fichero . js dentro de él.
+Iremos al .json y cambiaremos en main, app/server.js.
+En el test, pondremos nodemon + el main (nodemon app/server.js).
+Comprobar el funcionamiento agregando console.log(“Hola Mundo”) al server.js
+luego comprobar con npm /app/server.js
+Instalar nodemon en la terminal npm i nodemon -D.(Dependencia de desarrollo)
+Instalar express en la terminal npm i express. (Servidor web)
+
+Comprobar todo:
+Poner un console.log en server.js y escribir en la terminal node app/server.js.
+
+Poner en .json "start": "node app/server.js".
+Y en la terminal npm start.
+Por último npm test y npm start.
+
+
+Máquina Virtual Azure
+===============================================================================================================
+Apt install docker.io docker-compose apache2.
+Apt install certbot	
+sudo a2emod proxy
+Y reiniciar el servicio y comprobar la pagina web.
+
+Realizar la redirección:
+cd /etc/apache2
+cd sites-available
+sudo nano 000-default.conf
+
+En el fichero:
+ServerName smr2alu208609.francecentral.cloudapp.azure.com
+ServerAlias www.smr2alu208609.francecentral.cloudapp.azure.com
+
+ServerAdmin 208609@iessierradeguara.com
+(Quitar DocumentRoot)
+
+<Location />
+	Order allow,deny
+	Allow from all
+	Require all granted
+</Location>
+
+ProxyPass /wordpress http://127.0.0.1:8080
+ProxyPassReverse /wordpress http://127.0.0.1:8080
+
+ProxyPass /nextcloud http://127.0.0.1:8180
+ProxyPassReverse /nextcloud http://127.0.0.1:8180
+
+#Comentar los LOGs y recargar el servicio apache2.service
+Ir al home y crear las carpetas wordpress y nextcloud, por otra parte ir al navegador y en docker hub nextcloud y copiar el docker-compose.yml en un fichero dentro de la carpeta nextcloud. Lo mismo con wordpress.
+
+Editamos el docker-compose.yml y modificaremos el puerto 8180 antes establecido en el 000-default. Por otra parte en environment, poner RANDOM_ROOT_PASSWORD=yes. Y poner un password tanto arriba en DB como en APP.
+Lo mismo con wordpress.
+ 
+Agregaremos al usuario al grupo docker.
+sudo adduser miguel docker.
+
+Exit y volver a entrar al servidor para que afecte la modificación.
+
+Para que se descargue todo.
+Docker-compose up -d
+
+Vamos ahora a nuestro navegador y ahora nextcloud nos debería mostrar su página web.
+sudo a2dissite 000-default.conf
+sudo a2ensite 000-default.conf
+sudo a2enmod proxy _http 
+sudo systemctl restart apache2.service
+
+Consultas1:
+select * 
+from Director as d join Pelicula as p
+on p.id_Director = d.id;
+
+select Actriz.nombre, Pelicula.titulo, Papel.personaje
+from Actriz join Papel join Pelicula
+on Actriz.id = Papel.id_Actriz and 
+Papel.id_Pelicula = Pelicula.id
+where Pelicula.duracion < 100
+order by Papel.personaje desc;
+
+
+/* Mostras el titulo de las peliculas realizadas por directores nacidos en estados unidos */
+select Pelicula.titulo, Director.nombre, Director.pais
+from Director join Pelicula
+on Director.id = Pelicula.id_Director
+where pais like "Estados Unidos";
+
+/* Mostrar los actores/actrices que hayan trabajado con Christopher Nolan */
+select Actriz.nombre, Director.nombre, Pelicula.titulo
+from Director join Pelicula join Papel join Actriz
+on 	Director.id = Pelicula.id_Director and
+	Pelicula.id = Papel.id_Pelicula and
+	Papel.id_Actriz = Actriz.id
+where Director.nombre = "Christopher Nolan";
+
+/* 1º */
+-- select Actriz.nombre
+-- from Actriz
+
+
+-- select Pais.nombre
+-- from Pais
+-- where Pais.nombre like "a%"
+
+-- Mostrar la duracion de las peliculas largas(>150 minutos)
+-- select Pelicula.titulo
+-- from Pelicula
+-- where Pelicula.duracion > 150;
+
+-- Mostrar el titulo de las peliculas cortas (<150 minutos)
+select Pelicula.titulo
+from Pelicula
+where Pelicula.duracion < 150;
+
+-- Mostrar el nombre y el pais de los directores.
+-- select Director.nombre, Director.pais
+-- from Director
+
+-- Mostrar los personajes de las peliculas
+-- select Papel.personaje, Pelicula.titulo
+-- from Papel join Pelicula
+-- on Papel.id_Pelicula = Pelicula.id
+
+-- Mostrar los paises ordenados por orden alfabetico inverso
+select Pais.nombre
+from Pais
+order by Pais.nombre desc
+
+Consulta2:
+-- Mostrar el nombre de las actrices que empiecen por A
+-- select Actriz.nombre
+-- from Actriz
+-- where Actriz.nombre like "a%"
+
+-- Mostrar las actrices ordenadas de más joven a más mayor
+-- select Actriz.nombre, Actriz.fecha_nac
+-- from Actriz
+-- order by Actriz.fecha_nac desc;
+-- Mostrar las actrices que nacieron en verano (Julio y Agosto)
+select Actriz.nombre, Actriz.fecha_nac
+from Actriz
+where month(Actriz.fecha_nac) = 7 or (Actriz.fecha_nac) = 8; 
+
+-- Mostrar los directores ordenados por el pais de nacimiento
+select Director.nombre, Director.pais
+from Director
+order by  Director.pais asc;
+
+-- Mostrar los personajes que contengan una J en el nombre
+select Papel.personaje
+from Papel
+where Papel.personaje like "%j%"
+
+Consulta3:
+-- Mostrar el titulo de las peliculas, la duracion y el nombre del director
+select Pelicula.titulo, Pelicula.duracion, Director.nombre
+from Director join Pelicula;
+
+-- Mostrar los Personajes junto al título de las peliculas.
+select Papel.personaje, Pelicula.titulo
+from Papel join Pelicula
+on Papel.id_Pelicula = Pelicula.id;
+
+-- Mostrar los personajes y las actrices que los interpretan
+select Papel.personaje, Actriz.nombre
+from Papel join Actriz
+on Papel.id_Actriz = Actriz.id;
+
+-- Mostrar el pais de Kate Winslet
+Select Director.pais, Actriz.pais, Director.nombre
+from Director join Actriz
+on Director.pais = Actriz.id
+where Director.pais like "Kate Winslet";
+
+-- Mostrar los directores que hayan nacido en el mismo pais que Kate Winslet
+Select Director.pais, Actriz.pais, Director.nombre
+from Director join Actriz
+on Director.pais = Actriz.id
+where Director.pais like "Reino Unido";
+
+-- Mostrar las peliculas que contienen personajes que comienzan por A.
+Select Pelicula.titulo, Papel.personaje
+from Pelicula join Papel
+on Papel.id_Pelicula = Pelicula.id
+where Papel.personaje like "a%";
+
+-- Mostrar las peliculas y actrices(nombre) en las que hayan participado actrices cuyo nombre comienza por A (ordenarlas por el título de la película)
+Select Pelicula.titulo, Actriz.nombre
+from Pelicula join Actriz join Papel
+on Actriz.id = Papel.id_Actriz and
+	Papel.id_Pelicula = Pelicula.id
+where Actriz.nombre like "A%"
+order by Pelicula.titulo;
